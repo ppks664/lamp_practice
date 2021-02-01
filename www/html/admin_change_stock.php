@@ -9,6 +9,11 @@ session_start();
 if(is_logined() === false){
   redirect_to(LOGIN_URL);
 }
+$token = get_post('token');
+if(is_valid_csrf_token($token) === false){
+  redirect_to(LOGIN_URL);
+}
+unset($_SESSION['csrf_token']);
 //データベースと接続
 $db = get_db_connect();
 //ユーザーのデータを$ユーザーに入れる
@@ -17,6 +22,7 @@ $user = get_login_user($db);
 if(is_admin($user) === false){
   redirect_to(LOGIN_URL);
 }
+
 //item_idとstockをget_postで受け取ったら$item_id、$stockに入れる
 $item_id = get_post('item_id');
 $stock = get_post('stock');
