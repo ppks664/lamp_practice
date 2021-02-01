@@ -11,6 +11,11 @@ session_start();
 if(is_logined() === false){
   redirect_to(LOGIN_URL);
 }
+$token = get_post('token');
+if(is_valid_csrf_token($token) === false){
+  redirect_to(LOGIN_URL);
+}
+unset($_SESSION['csrf_token']);
 //データベースに接続する
 $db = get_db_connect();
 //ユーザーの情報のデータベースに接続
@@ -19,6 +24,7 @@ $user = get_login_user($db);
 if(is_admin($user) === false){
   redirect_to(LOGIN_URL);
 }
+
 //get_postでitem_idとchange_toを受け取る
 $item_id = get_post('item_id');
 $changes_to = get_post('changes_to');

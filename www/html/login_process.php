@@ -8,6 +8,11 @@ session_start();
 if(is_logined() === true){
   redirect_to(HOME_URL);
 }
+$token = get_post('token');
+if(is_valid_csrf_token($token) === false){
+  redirect_to(LOGIN_URL);
+}
+unset($_SESSION['csrf_token']);
 //nameとpasswordをget_postで受け取ったら$name$passwordに入れる
 $name = get_post('name');
 $password = get_post('password');
@@ -21,6 +26,7 @@ if( $user === false){
   set_error('ログインに失敗しました。');
   redirect_to(LOGIN_URL);
 }
+
 
 set_message('ログインしました。');
 //

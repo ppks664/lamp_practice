@@ -8,6 +8,11 @@ session_start();
 if(is_logined() === true){
   redirect_to(HOME_URL);
 }
+$token = get_post('token');
+if(is_valid_csrf_token($token) === false){
+  redirect_to(LOGIN_URL);
+}
+unset($_SESSION['csrf_token']);
 //nameをget_postで受け取ったら$nameにいれる
 $name = get_post('name');
 //passwordをget_postで受け取ったら$password
@@ -16,6 +21,7 @@ $password = get_post('password');
 $password_confirmation = get_post('password_confirmation');
 //db接続
 $db = get_db_connect();
+
 //ユーザー登録　
 try{
   $result = regist_user($db, $name, $password, $password_confirmation);

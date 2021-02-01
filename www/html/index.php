@@ -15,5 +15,5 @@ $db = get_db_connect();
 $user = get_login_user($db);
 //商品のデータベースに接続
 $items = get_open_items($db);
-
+$token = get_csrf_token();
 include_once VIEW_PATH . 'index_view.php';
