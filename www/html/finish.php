@@ -10,17 +10,18 @@ session_start();
 if(is_logined() === false){
   redirect_to(LOGIN_URL);
 }
+$token = get_post('token');
+if(is_valid_csrf_token($token) === false){
+  redirect_to(LOGIN_URL);
+}
+unset($_SESSION['csrf_token']);
 //db接続
 $db = get_db_connect();
 //ユーザーデータベースに接続
 $user = get_login_user($db);
 //$userにセットするuser_idと$dbをget_user_cartsで受けとったら、$cartsに入れる
 $carts = get_user_carts($db, $user['user_id']);
-$token = get_post('token');
-if(is_valid_csrf_token($token) === false){
-  redirect_to(LOGIN_URL);
-}
-unset($_SESSION['csrf_token']);
+
 //$cartと$dbをpuchase_cartsで受け取れないかった場合は、商品を購入できませんでした。と表示そして、カート画面に返す
 if(purchase_carts($db, $carts) === false){
   set_error('商品が購入できませんでした。');
