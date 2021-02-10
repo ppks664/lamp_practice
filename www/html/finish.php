@@ -21,13 +21,40 @@ $db = get_db_connect();
 $user = get_login_user($db);
 //$userにセットするuser_idと$dbをget_user_cartsで受けとったら、$cartsに入れる
 $carts = get_user_carts($db, $user['user_id']);
-
+//トランザクションを開始
+$db->beginTransaction();
 //$cartと$dbをpuchase_cartsで受け取れないかった場合は、商品を購入できませんでした。と表示そして、カート画面に返す
 if(purchase_carts($db, $carts) === false){
   set_error('商品が購入できませんでした。');
+  //rollback
+  $db->rollback();
   redirect_to(CART_URL);
 } 
 
 $total_price = sum_carts($carts);
+
+//購入履歴の追加
+  if(add_history($db,$user['user_id'],$total_price) === false){
+    //失敗したらエラーをセットエラー
+    set_error('購入履歴の追加が出来ませんでした。');
+    //rollback
+    $db->rollback();
+    //redirect
+    redirect_to(CART_URL);
+  }
+  $oder_id = $db->lastInsertId();
+
+//購入詳細の追加
+if(add_detail($db,$oder_id,$carts) === false){
+  //失敗したらエラーをセットエラー
+  set_error('購入詳細の追加が出来ませんでした。');
+  //rollback
+  $db->rollback();
+  //redirect
+  redirect_to(CART_URL);
+}
+//commit
+  $db->commit();
+
 
 include_once '../view/finish_view.php';
