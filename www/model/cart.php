@@ -1,7 +1,7 @@
 <?php 
 require_once MODEL_PATH . 'functions.php';
 require_once MODEL_PATH . 'db.php';
-
+//get_user_cartsの引数を使ってsql文を作成したらfetch_all_queryで返す
 function get_user_carts($db, $user_id){
   $sql = "
     SELECT
@@ -54,7 +54,7 @@ function get_user_cart($db, $user_id, $item_id){
   return fetch_query($db, $sql,$array);
 
 }
-
+//
 function add_cart($db, $user_id, $item_id ) {
   $cart = get_user_cart($db, $user_id, $item_id);
   if($cart === false){
@@ -62,7 +62,7 @@ function add_cart($db, $user_id, $item_id ) {
   }
   return update_cart_amount($db, $cart['cart_id'], $cart['amount'] + 1);
 }
-//mistake?
+//
 function insert_cart($db, $user_id, $item_id, $amount = 1){
   $sql = "
     INSERT INTO
@@ -159,3 +159,33 @@ function validate_cart_purchase($carts){
   return true;
 }
 
+function add_history($db,$user_id,$total_price){
+  $sql = "
+  INSERT INTO histories(
+    user_id,
+    total_price)
+    VALUES(:user_id,:total_price)
+  ";
+  $array = array(':user_id' => $user_id,':total_price' => $total_price);
+  return execute_query($db,$sql,$array);
+}
+function add_detail($db,$order_id,$carts){
+  foreach($carts as $cart){
+    if(insert_details($db,$order_id,$cart['item_id'],$cart['price'],$cart['amount']) === false){
+      return false;
+    }
+  }
+  return true;
+}
+function insert_details($db,$order_id,$item_id,$price,$amount){
+  $sql = "
+  INSERT INTO details(
+    order_id,
+    item_id,
+    price,
+    amount)
+    VALUES(:order_id,:item_id,:price,:amount)
+  ";
+  $array = array(':order_id' => $order_id,':item_id' => $item_id,':price' => $price,':amount' => $amount);
+  return execute_query($db,$sql,$array);
+}
