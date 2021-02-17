@@ -4,7 +4,7 @@ CREATE TABLE histories(
     order_id int(11) NOT NULL AUTO_INCREMENT,
     user_id int(11) NOT NULL,
     created datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    tortal_price int(11) NOT NULL,
+    total_price int(11) NOT NULL,
     PRIMARY KEY(order_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
