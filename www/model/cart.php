@@ -189,3 +189,54 @@ function insert_details($db,$order_id,$item_id,$price,$amount){
   $array = array(':order_id' => $order_id,':item_id' => $item_id,':price' => $price,':amount' => $amount);
   return execute_query($db,$sql,$array);
 }
+
+function get_history($db,$user_id){
+  $sql = "
+  SELECT
+  order_id,
+  created,
+  total_price
+  FROM
+  histories
+  WHERE
+  user_id = :user_id
+  ORDER BY
+  created desc";
+
+  $array = array(':user_id' => $user_id);
+  return fetch_all_query($db,$sql,$array);
+}
+
+function all_histories($db){
+  $sql = "
+  SELECT
+  order_id,
+  user_id,
+  created,
+  total_price
+  FROM 
+  histories
+  ORDER BY 
+  created desc";
+  return fetch_all_query($db,$sql);
+}
+
+function get_detail($db,$order_id){
+  $sql = "
+  SELECT
+  details.price,
+  details.amount,
+  details.price * details.amount AS subtotal,
+  items.name
+  FROM
+  details
+  JOIN
+  items
+  ON
+  details.item_id = items.item_id
+  WHERE
+  order_id = :order_id
+  ";
+  $array = array(':order_id' => $order_id);
+  return fetch_all_query($db,$sql,$array);
+}
