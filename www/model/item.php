@@ -21,8 +21,11 @@ function get_item($db, $item_id){
   $array = array(':item_id' => $item_id);
   return fetch_query($db, $sql,$array);
 }
-
-function get_items($db, $is_open = false){
+//引数を追加する・何順にするのかselectで選ばれたもの
+//新着順　=　order by created desc
+//価格の安い順　= order by price asc
+//価格の高い順は、order by price desc
+function get_items($db,$change = '', $is_open = false){
   $sql = '
     SELECT
       item_id, 
@@ -39,6 +42,19 @@ function get_items($db, $is_open = false){
       WHERE status = 1
     ';
   }
+  if($change === '新着順'){
+    $sql .= '
+    ORDER BY created DESC
+    ';
+  }else if($change === '価格の安い順'){
+    $sql .= '
+    ORDER BY price ASC
+    ';
+  }else if($change === '価格の高い順'){
+    $sql .= '
+    ORDER BY price DESC
+    ';
+  }
 
   return fetch_all_query($db, $sql);
 }
@@ -47,8 +63,8 @@ function get_all_items($db){
   return get_items($db);
 }
 
-function get_open_items($db){
-  return get_items($db, true);
+function get_open_items($db,$change){
+  return get_items($db,$change, true);
 }
 
 function regist_item($db, $name, $price, $stock, $status, $image){
