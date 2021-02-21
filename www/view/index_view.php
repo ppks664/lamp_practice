@@ -15,9 +15,9 @@
     <h1>商品一覧</h1>
     <form>
     <select name="change">
-    <option value="新着順" selected>新着順</option>
-    <option value="価格の安い順">価格の安い順</option>
-    <option value="価格の高い順">価格の高い順</option>
+    <option value="新着順" <?php if($change === '新着順'){print h('selected');} ?>>新着順</option>
+    <option value="価格の安い順" <?php if($change === '価格の安い順'){print h('selected');} ?>>価格の安い順</option>
+    <option value="価格の高い順" <?php if($change === '価格の高い順'){print h('selected');} ?>>価格の高い順</option>
     </selct>
     <input type="submit" value="並び替え">
     </form>
